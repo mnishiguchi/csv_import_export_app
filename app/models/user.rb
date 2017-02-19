@@ -26,4 +26,16 @@ class User < ApplicationRecord
 
   has_many :forum_threads
   has_many :forum_posts
+
+  # Return an in-memory user object created from a CSV row.
+  def self.assign_from_row(row)
+    # NOTE: Use User.first_or_initialize instead of User.new so that we can
+    # handle both creating a new record and updating an existing record.
+    user = User.where(email: row[:email]).first_or_initialize
+    user.assign_attributes(
+      row.to_hash.slice(:email, :username, :password)
+    )
+    user  # Return an in-memory user object.
+  end
+
 end

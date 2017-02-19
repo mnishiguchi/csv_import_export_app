@@ -10,13 +10,13 @@ namespace :import do
       # p row.to_hash
 
       # Crete a user in memory.
-      user = User.new(row.to_hash.slice(:email, :username, :password))
+      user = User.assign_from_row(row)
 
       # Try to save it in the database.
       if user.save
         user_count += 1
       else
-        puts "#{row["email"]} - #{user.errors.full_messages.join(', ')}"
+        puts "#{user.email} - #{user.errors.full_messages.join(', ')}"
       end
     end
 
