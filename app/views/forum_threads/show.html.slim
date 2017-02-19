@@ -1,0 +1,9 @@
+p = link_to "Back to all threads", forum_threads_path
+
+h1 = @forum_thread.title 
+
+- @forum_thread.forum_posts.includes(:user).each do |forum_post| 
+  = render 'forum_threads/forum_posts/forum_post', forum_post: forum_post
+
+hr
+= render partial: "forum_threads/forum_posts/form" 

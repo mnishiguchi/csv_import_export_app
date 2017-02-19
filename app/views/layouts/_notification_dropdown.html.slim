@@ -1,0 +1,18 @@
+li.nav-item.dropdown [
+  data-behavior="notifications" 
+]
+  a#unredCountDropdown.dropdown-toggle.nav-link [
+    aria-expanded="false" 
+    aria-haspopup="true" 
+    data-behavior="notifications-link" 
+    data-toggle="dropdown" 
+    type="button" 
+    class="#{notifications.unread.count > 0 ? 'has_unread' : ''}"
+  ]
+    = fa_icon "bell"
+    span [data-behavior="unread-count"] = notifications.unread.count
+  
+  .dropdown-menu.dropdown-menu-right [data-behavior="notification-items" aria-labelledby="unredCountDropdown"] 
+    - notifications.each do |notification|
+      = render partial: "notifications/#{notification.notifiable_type.underscore.pluralize}/#{notification.action}", 
+               locals:  { notification: notification }
