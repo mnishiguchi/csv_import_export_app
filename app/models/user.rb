@@ -27,6 +27,27 @@ class User < ApplicationRecord
   has_many :forum_threads
   has_many :forum_posts
 
+  # Takes a temporary file object that Rails creates when a file is uploaded.
+  # Return a count that indicates how many records were loaded from the file.
+  def self.import(file)
+    import_count = 0
+
+    CSV.foreach(file.path, headers: true, header_converters: :symbol) do |row|
+      # Crete a user in memory.
+      user = User.assign_from_row(row)
+
+      # Try to save it in the database.
+      if user.save
+        import_count += 1
+      else
+        puts "#{user.email} - #{user.errors.full_messages.join(', ')}"
+      end
+    end
+
+    import_count
+  end
+
+
   # Return an in-memory user object created from a CSV row.
   def self.assign_from_row(row)
     # NOTE: Use User.first_or_initialize instead of User.new so that we can

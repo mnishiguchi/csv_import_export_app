@@ -1,6 +1,11 @@
 Rails.application.routes.draw do
 
-  resources :users
+  resources :users do
+    collection do
+      post :import
+    end
+  end
+
   devise_for :users
 
   # forum_posts are always accessed with their parent forum thread.

@@ -61,6 +61,20 @@ class UsersController < ApplicationController
     end
   end
 
+  # POST /users/import(.:format)
+  def import
+    # raise params[:file]
+
+    import_count = User.import(params[:file])
+    flash[:success] = "Imported #{import_count} users"
+    redirect_to users_url
+
+    # NOTE: Rails can handle file uploads without CarrierWave or PapaerClip but
+    # the loaded file is saved in a temp file.
+    # If we need to look up the loaded file again later, we will enjoy the benefit of
+    # using those third party libraries.
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user
