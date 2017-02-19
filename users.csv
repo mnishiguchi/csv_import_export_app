@@ -1,2 +1,3 @@
-taro@example.com, Taro
-masa@example.com, Masa
+email, username, password
+taro@example.com, Taro, tarospassword
+masa@example.com, Masa, masaspassword

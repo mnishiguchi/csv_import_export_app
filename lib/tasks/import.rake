@@ -6,20 +6,19 @@ namespace :import do
     filename = File.join Rails.root, "users.csv"  # The absolute path to the CSV file.
     user_count = 0                                # Count the number of users that were successfully persisted to database.
 
-    CSV.foreach(filename) do |row|
+    CSV.foreach(filename, headers: true) do |row|
       # p row
-      email, username = row
 
       # Try to create a user record in the database.
       user = User.create(
-        email:    email,
-        username: username,
-        password: "password"
+        email:    row["email"],
+        username: row["username"],
+        password: row["password"]
       )
 
       # Print errors to termimal if any.
       if user.errors.any?
-        puts "#{email} - #{user.errors.full_messages}"
+        puts "#{row["email"]} - #{user.errors.full_messages}"
       end
 
       # Update the counter.
