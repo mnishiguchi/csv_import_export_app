@@ -9,21 +9,18 @@ namespace :import do
     CSV.foreach(filename, headers: true) do |row|
       # p row
 
-      # Try to create a user record in the database.
-      user = User.create(
+      # Crete a user in memory.
+      user = User.new(
         email:    row["email"],
         username: row["username"],
         password: row["password"]
       )
 
-      # Print errors to termimal if any.
-      if user.errors.any?
-        puts "#{row["email"]} - #{user.errors.full_messages}"
-      end
-
-      # Update the counter.
-      if user.persisted?
+      # Try to save it in the database.
+      if user.save
         user_count += 1
+      else
+        puts "#{row["email"]} - #{user.errors.full_messages.join(', ')}"
       end
     end
 
