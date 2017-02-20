@@ -27,6 +27,24 @@ class User < ApplicationRecord
   has_many :forum_threads
   has_many :forum_posts
 
+  def self.to_csv
+    attribute_names = %w{ id email username created_at }
+    CSV.generate(headers: true) do |csv|
+      # Add attribute names to the first row.
+      csv << attribute_names
+
+      # Add attribute values to the following rows for each record.
+      # NOTE: Previously defined scopes will still be effective here.
+      all.each do |user|
+        csv << user.attributes.values_at(*attribute_names)
+
+        # Getting attribute values
+        #   csv << user.attributes.values_at(*attribute_names)    # Pattern A: attributes that exist in database
+        #   csv << attribute_names.map { |attr| user.send(attr) } # Pattern B: attributes that exist in database + virtual attributes
+      end
+    end
+  end
+
   # Takes a temporary file object that Rails creates when a file is uploaded.
   # Return a count that indicates how many records were loaded from the file.
   def self.import(file)

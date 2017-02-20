@@ -5,6 +5,25 @@ class UsersController < ApplicationController
   # GET /users.json
   def index
     @users = User.all
+
+    respond_to do |format|
+      format.html {}
+      format.csv { send_data @users.to_csv, filename: "users-#{Date.today}.csv" }
+    end
+  end
+
+  # POST /users/import(.:format)
+  def import
+    # raise params[:file]
+
+    import_count = User.import(params[:file])
+    flash[:success] = "Imported #{import_count} users"
+    redirect_to users_url
+
+    # NOTE: Rails can handle file uploads without CarrierWave or PapaerClip but
+    # the loaded file is saved in a temp file.
+    # If we need to look up the loaded file again later, we will enjoy the benefit of
+    # using those third party libraries.
   end
 
   # GET /users/1
@@ -59,20 +78,6 @@ class UsersController < ApplicationController
       format.html { redirect_to users_url, notice: 'User was successfully destroyed.' }
       format.json { head :no_content }
     end
-  end
-
-  # POST /users/import(.:format)
-  def import
-    # raise params[:file]
-
-    import_count = User.import(params[:file])
-    flash[:success] = "Imported #{import_count} users"
-    redirect_to users_url
-
-    # NOTE: Rails can handle file uploads without CarrierWave or PapaerClip but
-    # the loaded file is saved in a temp file.
-    # If we need to look up the loaded file again later, we will enjoy the benefit of
-    # using those third party libraries.
   end
 
   private
