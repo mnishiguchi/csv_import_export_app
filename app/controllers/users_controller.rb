@@ -4,7 +4,8 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
   def index
-    @users = User.all
+    @users       = User.all
+    @user_import = User::Import.new
 
     respond_to do |format|
       format.html {}
@@ -16,12 +17,21 @@ class UsersController < ApplicationController
   def import
     # raise params[:file]
 
-    import_count = User.import(params[:file])
-    flash[:success] = "Imported #{import_count} users"
-    redirect_to users_url
+    @user_import = User::Import.new(user_import_params)
+
+    # Try to import the specified file.
+    if @user_import.save
+      flash[:success] = "Imported #{@user_import.imported_count} users"
+      redirect_to users_url
+    else
+      @users = User.all  # Provide users because we re-render users/index view.
+      flash.now[:alert] = "There were #{view_context.pluralize(@user_import.errors.count, "error")} importing your CSV file"
+      render action: :index
+    end
 
     # NOTE: Rails can handle file uploads without CarrierWave or PapaerClip but
     # the loaded file is saved in a temp file.
+    # The temp file object is stored in params[:file].
     # If we need to look up the loaded file again later, we will enjoy the benefit of
     # using those third party libraries.
   end
@@ -89,5 +99,13 @@ class UsersController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
       params.fetch(:user, {})
+    end
+
+    def user_import_params
+      params.fetch(:user_import, {}).permit(:file)
+      # NOTE: When params are empty, the following exception will be raised:
+      # ActionController::ParameterMissing - param is missing or the value is empty: user_import: ...
+      # To avoid that, provide a default {} using fetch instead of require.
+      # http://guides.rubyonrails.org/action_controller_overview.html#more-examples
     end
 end
