@@ -19,9 +19,11 @@ table.table
 
 hr
 
-= form_tag import_users_path, multipart: true do
-  = file_field_tag :file do
-  = submit_tag "Upload CSV", class: "btn btn-primary", style: "display: block; margin-top: 1rem;"
+= form_for @user_import, url: import_users_path, multipart: true do |f|
+  = render "shared/error_messages", object: @user_import
+  
+  = f.file_field :file do
+  = f.submit "Upload CSV", class: "btn btn-primary", style: "display: block; margin-top: 1rem;"
 
 hr
 
